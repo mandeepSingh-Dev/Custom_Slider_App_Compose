@@ -100,7 +100,10 @@ class MainActivity : ComponentActivity() {
                             rowWidth = it.size.width
                         }) {
 
-                        LeftTrapezoidum(modifier = Modifier.weight(1f),rowWidth)
+//                        LeftTrapezoidum(modifier = Modifier.weight(1f),rowWidth)
+//                        `0WidthToFullWidthAnimation`()
+//                        AnimateProgressButton()
+                        movingAnimateButton()
                     }
 /*
                     NavHost(navController = navController, startDestination = "Screen1"){
@@ -590,5 +593,4 @@ fun signUpScreen(){
 @Composable
 fun previewSignUpScreen(){
     signUpScreen()
-    
 }
