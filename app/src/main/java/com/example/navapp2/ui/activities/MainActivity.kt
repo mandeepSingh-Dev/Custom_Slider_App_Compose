@@ -16,6 +16,7 @@ import com.example.navapp2.Graph.nestedGraphs.NavGraphCommon
 import com.example.navapp2.Graph.nestedGraphs.NavGraphHome
 import com.example.navapp2.Graph.screensEnum.HomeScreens
 import com.example.navapp2.ui.EnterExitJetsnack
+import com.example.navapp2.ui.FamilyAddScreen
 import com.example.navapp2.ui.PlaceholderSizeAnimated_Demo
 import com.example.navapp2.ui.SharedElement2
 import com.example.navapp2.ui.SharedElementApp_BoundsTransformExample
@@ -44,6 +45,9 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
 
+                    FamilyAddScreen()
+
+/*
                     NavHost(navController = navController, startDestination = NavGraphHome.GraphRoute){
 
                         //Common Nested NavGraph
@@ -159,6 +163,7 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     }
+*/
                 }
             }
         }

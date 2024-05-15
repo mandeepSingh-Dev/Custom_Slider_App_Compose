@@ -23,6 +23,7 @@ import com.example.navapp2.R
  */
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.BoundsTransform
@@ -31,7 +32,6 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.ArcMode
 import androidx.compose.animation.core.ExperimentalAnimationSpecApi
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -41,6 +41,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -60,11 +61,16 @@ import androidx.compose.foundation.layout.requiredHeightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Share
@@ -76,12 +82,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavType
@@ -97,8 +104,12 @@ fun SharedElementApp_BoundsTransformExample(onNavigate : (String) ->Unit) {
     var showDetails by remember {
         mutableStateOf(false)
     }
-    Surface(modifier = Modifier.fillMaxSize().clickable { Log.d("fvknfknvf","fknfjvnf")
-        onNavigate(NavGraphHome.SharedElement_Clipping.route) }) {
+    Surface(modifier = Modifier
+        .fillMaxSize()
+        .clickable {
+            Log.d("fvknfknvf", "fknfjvnf")
+            onNavigate(NavGraphHome.SharedElement_Clipping.route)
+        }) {
         SharedTransitionLayout {
             AnimatedContent(
                 showDetails,
@@ -165,7 +176,7 @@ private fun MainContent(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
                         ) {
-                            Log.d("fvknfknvf","fknfjvnf 26372")
+                            Log.d("fvknfknvf", "fknfjvnf 26372")
                             onShowDetails()
                         }
                         .padding(8.dp)
@@ -333,7 +344,9 @@ private const val boundsAnimationDurationMillis = 1500
     var showDetails by remember {
         mutableStateOf(false)
     }
-    Surface(modifier = Modifier.fillMaxSize().clickable { onNavigate(NavGraphHome.SharedElement_SkipLookaheadSize.route) }) {
+    Surface(modifier = Modifier
+        .fillMaxSize()
+        .clickable { onNavigate(NavGraphHome.SharedElement_SkipLookaheadSize.route) }) {
     SharedTransitionLayout {
         AnimatedContent(
             showDetails,
@@ -457,7 +470,9 @@ fun SharedElement_SkipLookaheadSize(onNavigate: (String) -> Unit) {
     // Nested shared bounds sample.
     val selectionColor = Color(0xff3367ba)
     var expanded by remember { mutableStateOf(true) }
-    Surface(modifier = Modifier.fillMaxSize().clickable { onNavigate(NavGraphHome.PlaceholderSizeAnimated_Demo.route) }) {
+    Surface(modifier = Modifier
+        .fillMaxSize()
+        .clickable { onNavigate(NavGraphHome.PlaceholderSizeAnimated_Demo.route) }) {
 
         SharedTransitionLayout(
             Modifier
@@ -510,14 +525,16 @@ fun SharedElement_SkipLookaheadSize(onNavigate: (String) -> Unit) {
                             Icon(
                                 Icons.Outlined.Favorite,
                                 contentDescription = "Favorite",
-                                modifier = Modifier.padding(
-                                    top = 10.dp,
-                                    bottom = 10.dp,
-                                    start = 10.dp,
-                                    end = 20.dp
-                                ).clickable {
-                                    onNavigate(NavGraphHome.PlaceholderSizeAnimated_Demo.route)
-                                }
+                                modifier = Modifier
+                                    .padding(
+                                        top = 10.dp,
+                                        bottom = 10.dp,
+                                        start = 10.dp,
+                                        end = 20.dp
+                                    )
+                                    .clickable {
+                                        onNavigate(NavGraphHome.PlaceholderSizeAnimated_Demo.route)
+                                    }
                             )
                             Icon(
                                 Icons.Outlined.Create,
@@ -597,7 +614,9 @@ fun PlaceholderSizeAnimated_Demo(onNavigate: (String) -> Unit) {
 
     // This demo shows how other items in a layout can respond to shared elements changing in size.
     // [START android_compose_shared_element_placeholder_size]
-    Surface(modifier = Modifier.fillMaxSize().clickable { onNavigate(NavGraphHome.customTextSharedElelement.route) }) {
+    Surface(modifier = Modifier
+        .fillMaxSize()
+        .clickable { onNavigate(NavGraphHome.customTextSharedElelement.route) }) {
         SharedTransitionLayout {
 
             val navController = rememberNavController()
@@ -778,6 +797,140 @@ fun customTextSharedElelement(){
         }
 
     }
+}
+
+
+@Composable
+fun FamilyAddScreen(){
+
+    val itemsList = listOf("Daughter", "Son", "Relative", "Friend", "Father", "Mother", "Grandson", "Grand Daughter", " Niece")
+
+    LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+        items(itemsList){
+            AddFamilyItem()
+        }
+
+    }
+}
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+fun AddFamilyItem(){
+
+    var isFirstLayout : Boolean by remember {
+        mutableStateOf(true)
+    }
+
+    SharedTransitionLayout {
+
+        AnimatedContent(targetState = isFirstLayout, label = ""){
+            if(it)
+            {
+                Box(contentAlignment = Alignment.TopCenter, modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 20.dp, start = 5.dp)
+                    .sharedBounds(
+                        sharedContentState = rememberSharedContentState(key = "bound1"),
+                    animatedVisibilityScope = this)
+                    .clickable {
+                        isFirstLayout = !isFirstLayout
+                    }
+                ) {
+                    Card(elevation = 20.dp, border = BorderStroke(width = 5.dp, color = Color.Yellow), shape = RoundedCornerShape(30.dp), modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 50.dp)) {
+                        Text(text = "hello" , modifier = Modifier.padding(top = 70.dp, bottom = 50.dp) , textAlign = TextAlign.Center)}
+
+                    Image(painter = painterResource(id = R.drawable.ic_launcher_background), contentDescription = "",
+                        modifier =Modifier.clip(CircleShape).sharedBounds(
+                            sharedContentState = rememberSharedContentState(key = "bound_image"),
+                            animatedVisibilityScope = this@AnimatedContent))
+                }
+            }else{
+                familyMemberDetails(this,this@SharedTransitionLayout,Modifier.clickable {
+                    isFirstLayout = !isFirstLayout
+                })
+            }
+        }
+
+    }
+
+
+
+}
+
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+fun familyMemberDetails(
+    animatedContentScope: AnimatedContentScope,
+    sharedTransitionScope: SharedTransitionScope,
+    modifier: Modifier
+) {
+
+
+    with(sharedTransitionScope){
+        Column( modifier = modifier
+            .fillMaxSize()
+            .background(color = Color.Red)
+            .padding(20.dp)
+            .sharedBounds(
+                sharedContentState = rememberSharedContentState(key = "bound1"),
+                animatedVisibilityScope = animatedContentScope))
+        {
+
+            Card( modifier = Modifier.align(Alignment.CenterHorizontally),
+                shape = CircleShape,
+                border = BorderStroke(width = 2.dp, color = Color.Gray),
+                elevation = 20.dp
+            ) {
+                Image(painter = painterResource(id = R.drawable.ic_launcher_background), contentDescription = "", modifier = Modifier
+                    .padding(10.dp)
+                    .clip(CircleShape)
+                    .shadow(elevation = 50.dp)
+                    .sharedBounds(
+                        sharedContentState = rememberSharedContentState(key = "bound_image"),
+                        animatedVisibilityScope = animatedContentScope))
+            }
+
+            Text(text = "First Name")
+            OutlinedTextField(value = "", onValueChange = {}, leadingIcon = { Icon(imageVector = Icons.Default.Create, contentDescription = "")}, shape = RoundedCornerShape(20.dp), modifier = Modifier
+                .padding(top = 10.dp)
+                .fillMaxWidth())
+
+            Text(text = "First Name")
+            OutlinedTextField(value = "", onValueChange = {}, leadingIcon = { Icon(imageVector = Icons.Default.Create, contentDescription = "")}, shape = RoundedCornerShape(20.dp), modifier = Modifier
+                .padding(top = 10.dp)
+                .fillMaxWidth())
+
+            Text(text = "First Name")
+            OutlinedTextField(value = "", onValueChange = {}, leadingIcon = { Icon(imageVector = Icons.Default.Create, contentDescription = "")}, shape = RoundedCornerShape(20.dp), modifier = Modifier
+                .padding(top = 10.dp)
+                .fillMaxWidth())
+
+            Text(text = "First Name")
+            OutlinedTextField(value = "", onValueChange = {}, leadingIcon = { Icon(imageVector = Icons.Default.Create, contentDescription = "")}, shape = RoundedCornerShape(20.dp), modifier = Modifier
+                .padding(top = 10.dp)
+                .fillMaxWidth())
+
+            Text(text = "First Name")
+            OutlinedTextField(value = "", onValueChange = {}, leadingIcon = { Icon(imageVector = Icons.Default.Create, contentDescription = "")}, shape = RoundedCornerShape(20.dp), modifier = Modifier
+                .padding(top = 10.dp)
+                .fillMaxWidth())
+
+            Text(text = "First Name")
+            OutlinedTextField(value = "", onValueChange = {}, leadingIcon = { Icon(imageVector = Icons.Default.Create, contentDescription = "")}, shape = RoundedCornerShape(20.dp), modifier = Modifier
+                .padding(top = 10.dp)
+                .fillMaxWidth())
+
+            Text(text = "First Name")
+            OutlinedTextField(value = "", onValueChange = {}, leadingIcon = { Icon(imageVector = Icons.Default.Create, contentDescription = "")}, shape = RoundedCornerShape(20.dp), modifier = Modifier
+                .padding(top = 10.dp)
+                .fillMaxWidth())
+
+        }
+    }
+
+
 }
 
 
