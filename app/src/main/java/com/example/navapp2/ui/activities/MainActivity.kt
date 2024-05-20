@@ -24,11 +24,13 @@ import com.example.navapp2.ui.SharedElement_Clipping
 import com.example.navapp2.ui.SharedElement_SkipLookaheadSize
 import com.example.navapp2.ui.common.screens.AnimateProgressButton
 import com.example.navapp2.ui.common.screens.ZeroWidthToFullWidthAnimation
+import com.example.navapp2.ui.composableFun
 import com.example.navapp2.ui.customTextSharedElelement
 import com.example.navapp2.ui.home.screens.LeftRightTrapezodiumsScreen
 import com.example.navapp2.ui.home.screens.moveImage
 import com.example.navapp2.ui.home.screens.sharedComponent
 import com.example.navapp2.ui.theme.NavApp2Theme
+import com.playmoweb.multidatepicker.MultiDatePicker
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalComposeUiApi::class)
@@ -45,7 +47,9 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
 
-                    FamilyAddScreen()
+                    Column {
+                        MultiDatePicker()
+                    }
 
 /*
                     NavHost(navController = navController, startDestination = NavGraphHome.GraphRoute){

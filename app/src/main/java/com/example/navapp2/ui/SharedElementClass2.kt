@@ -74,6 +74,9 @@ import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -97,6 +100,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.navapp2.Graph.nestedGraphs.NavGraphHome
+
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -830,7 +834,8 @@ fun AddFamilyItem(){
                     .padding(top = 20.dp, start = 5.dp)
                     .sharedBounds(
                         sharedContentState = rememberSharedContentState(key = "bound1"),
-                    animatedVisibilityScope = this)
+                        animatedVisibilityScope = this
+                    )
                     .clickable {
                         isFirstLayout = !isFirstLayout
                     }
@@ -841,9 +846,12 @@ fun AddFamilyItem(){
                         Text(text = "hello" , modifier = Modifier.padding(top = 70.dp, bottom = 50.dp) , textAlign = TextAlign.Center)}
 
                     Image(painter = painterResource(id = R.drawable.ic_launcher_background), contentDescription = "",
-                        modifier =Modifier.clip(CircleShape).sharedBounds(
-                            sharedContentState = rememberSharedContentState(key = "bound_image"),
-                            animatedVisibilityScope = this@AnimatedContent))
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .sharedBounds(
+                                sharedContentState = rememberSharedContentState(key = "bound_image"),
+                                animatedVisibilityScope = this@AnimatedContent
+                            ))
                 }
             }else{
                 familyMemberDetails(this,this@SharedTransitionLayout,Modifier.clickable {
@@ -853,9 +861,6 @@ fun AddFamilyItem(){
         }
 
     }
-
-
-
 }
 
 
@@ -875,7 +880,8 @@ fun familyMemberDetails(
             .padding(20.dp)
             .sharedBounds(
                 sharedContentState = rememberSharedContentState(key = "bound1"),
-                animatedVisibilityScope = animatedContentScope))
+                animatedVisibilityScope = animatedContentScope
+            ))
         {
 
             Card( modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -889,7 +895,8 @@ fun familyMemberDetails(
                     .shadow(elevation = 50.dp)
                     .sharedBounds(
                         sharedContentState = rememberSharedContentState(key = "bound_image"),
-                        animatedVisibilityScope = animatedContentScope))
+                        animatedVisibilityScope = animatedContentScope
+                    ))
             }
 
             Text(text = "First Name")
@@ -929,8 +936,7 @@ fun familyMemberDetails(
 
         }
     }
-
-
 }
+
 
 
