@@ -1,36 +1,24 @@
 package com.example.navapp2.ui.activities
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.example.navapp2.Graph.nestedGraphs.NavGraphCommon
-import com.example.navapp2.Graph.nestedGraphs.NavGraphHome
-import com.example.navapp2.Graph.screensEnum.HomeScreens
-import com.example.navapp2.ui.EnterExitJetsnack
-import com.example.navapp2.ui.FamilyAddScreen
-import com.example.navapp2.ui.PlaceholderSizeAnimated_Demo
-import com.example.navapp2.ui.SharedElement2
-import com.example.navapp2.ui.SharedElementApp_BoundsTransformExample
-import com.example.navapp2.ui.SharedElement_Clipping
-import com.example.navapp2.ui.SharedElement_SkipLookaheadSize
-import com.example.navapp2.ui.common.screens.AnimateProgressButton
-import com.example.navapp2.ui.common.screens.ZeroWidthToFullWidthAnimation
-import com.example.navapp2.ui.composableFun
-import com.example.navapp2.ui.customTextSharedElelement
-import com.example.navapp2.ui.home.screens.LeftRightTrapezodiumsScreen
-import com.example.navapp2.ui.home.screens.moveImage
-import com.example.navapp2.ui.home.screens.sharedComponent
 import com.example.navapp2.ui.theme.NavApp2Theme
+import com.playmoweb.multidatepicker.DateRangePickerr
 import com.playmoweb.multidatepicker.MultiDatePicker
+import com.playmoweb.multidatepicker.utils.extensions.DAY_YEAR
+import com.playmoweb.multidatepicker.utils.extensions.asString
+import java.util.Calendar
+import java.util.Date
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalComposeUiApi::class)
@@ -40,6 +28,15 @@ class MainActivity : ComponentActivity() {
 
             var navController = rememberNavController()
 
+            Log.d("lbkmbfgbv",Date(System.currentTimeMillis()).asString(DAY_YEAR).toString())
+
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = 1716211710233
+            val selectedDate = calendar.time
+
+            calendar.timeInMillis = 1715211710233
+            val selectedDate2 = calendar.time
+
             NavApp2Theme {
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -47,8 +44,16 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
 
-                    Column {
-                        MultiDatePicker()
+                    var selectedDates = remember {
+                        mutableStateListOf<Date?>(selectedDate,selectedDate2)
+                    }
+
+                    Column() {
+                        DateRangePickerr(onRangeSelected = {startDate, endDate ->
+                            Log.d("lvmkfbmgbg",startDate.toString() + "  " + endDate.toString())
+                        })
+                        MultiDatePicker(selectedDates = selectedDates)
+
                     }
 
 /*

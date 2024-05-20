@@ -1,13 +1,8 @@
 package com.playmoweb.multidatepicker
 
-import android.util.Log
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.with
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -37,11 +32,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,8 +48,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.playmoweb.multidatepicker.models.MultiDatePickerColors
 import com.playmoweb.multidatepicker.utils.Operation
-import com.playmoweb.multidatepicker.utils.extensions.DAY_YEAR
-import com.playmoweb.multidatepicker.utils.extensions.asString
 import com.playmoweb.multidatepicker.utils.extensions.toMonthYear
 import com.playmoweb.multidatepicker.utils.extensions.toShortDay
 import com.playmoweb.multidatepicker.utils.innerPadding
@@ -69,13 +60,15 @@ import java.util.Date
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun MultiDatePicker(
+fun DateRangePickerr(
     modifier: Modifier = Modifier,
     minDate: Date? = null,
     maxDate: Date? = null,
+    startDate: MutableState<Date?> = remember { mutableStateOf(null) },
+    endDate: MutableState<Date?> = remember { mutableStateOf(null) },
     colors: MultiDatePickerColors = MultiDatePickerColors.defaults(),
-    selectedDates: SnapshotStateList<Date?> = remember { mutableStateListOf<Date?>() },
     cardRadius: Dp = mediumRadius,
+    onRangeSelected : (startDate : Date?, endDate : Date?) -> Unit
 ) {
     val localDensity = LocalDensity.current
 
@@ -89,10 +82,6 @@ fun MultiDatePicker(
     val pickerHeight = remember { mutableStateOf(0.dp) }
     var offsetX by remember { mutableStateOf(0f) }
     var isSliding by remember { mutableStateOf(false) }
-
-    selectedDates.forEach {
-        Log.d("fvmkfvmf",it.toString())
-    }
 
     LaunchedEffect(isSelectYear.value) {
         if (isSelectYear.value) {
@@ -128,18 +117,15 @@ fun MultiDatePicker(
             modifier = Modifier
                 .clip(CircleShape)
                 .clickable {
-                    Log.d("fblmkbmgfb", "!22")
                     currDate.value = calendar.value.apply {
-                        Log.d("fmfkvmfk", Calendar.MONTH.toString())
                         add(
-                            Calendar.MONTH, when (operation) {
+                            Calendar.MONTH,
+                            when (operation) {
                                 Operation.PLUS -> 1
                                 Operation.MINUS -> -1
                             }
                         )
                     }.time
-
-                    Log.d("fbmkfmbf", currDate.value.toString())
                 }
                 .padding(xxsmallPadding)
         )
@@ -158,39 +144,25 @@ fun MultiDatePicker(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            MonthPickerIcon(Operation.MINUS)
             Text(
                 text = currDate.value.toMonthYear(),
                 style = MaterialTheme.typography.bodyMedium.copy(color = colors.monthColor),
                 modifier = Modifier
                     .clip(RoundedCornerShape(smallRadius))
-                    .clickable {
-                        Log.d("fblmkbmgfb", "157")
-                        isSelectYear.value = true
-                    }
+                    .clickable { isSelectYear.value = true }
                     .padding(xxsmallPadding)
             )
-            MonthPickerIcon(Operation.PLUS)
 
-
+            Row {
+                MonthPickerIcon(Operation.MINUS)
+                Spacer(Modifier.width(xxsmallPadding))
+                MonthPickerIcon(Operation.PLUS)
+            }
         }
         Spacer(Modifier.height(xxsmallPadding))
 
-        Box(
-            /*targetState = isSelectYear.value,
-            transitionSpec = {
-                if (targetState) {
-                    fadeIn() with fadeOut()
-                } else {
-                    fadeIn() with fadeOut()
-                }
-            }, label = ""*/
-        )
-        {
+        Box() {
             if (isSelectYear.value) {
-                /**
-                 * YEARS SELECTOR
-                 */
                 /**
                  * YEARS SELECTOR
                  */
@@ -209,9 +181,7 @@ fun MultiDatePicker(
                                 .height(pickerHeight.value / 7)
                                 .clip(RoundedCornerShape(smallRadius))
                                 .clickable {
-                                    Log.d("fblmkbmgfb", "201")
-                                    currDate.value =
-                                        calendar.value.apply { set(Calendar.YEAR, year) }.time
+                                    currDate.value = calendar.value.apply { set(Calendar.YEAR, year) }.time
                                     isSelectYear.value = false
                                 },
                             contentAlignment = Alignment.Center
@@ -232,9 +202,6 @@ fun MultiDatePicker(
                     /**
                      * DAYS
                      */
-                    /**
-                     * DAYS
-                     */
                     Row {
                         weekDays.map {
                             Text(
@@ -246,10 +213,6 @@ fun MultiDatePicker(
                         }
                     }
                     Spacer(Modifier.height(xxsmallPadding))
-
-                    /**
-                     * BODY
-                     */
 
                     /**
                      * BODY
@@ -269,107 +232,74 @@ fun MultiDatePicker(
                         val daysNumber: IntRange = (1..calendar.value.getActualMaximum(Calendar.DAY_OF_MONTH))
                         val days: List<Date> = daysNumber.map { calendar.value.apply { set(Calendar.DAY_OF_MONTH, it) }.time }
                         val daysItem: MutableList<Date?> = days.toMutableList()
-
-                        Log.d("vplmfmkvmnf",daysItem.toString())
                         // ADD EMPTY ITEMS TO THE BEGINNING OF THE LIST IF FIRST WEEK DAY OF MONTH DON'T START ON THE FIRST DAY OF THE WEEK
                         daysItem.first().let {
                             val dayOfWeek = if (it!!.day == 0) 7 else it.day
                             (1 until dayOfWeek).forEach { _ -> daysItem.add(0, null) }
                         }
-                        Log.d("vplmfmkvm3828932nf",daysItem.toString())
 
                         val daysByWeek: List<MutableList<Date?>> = daysItem.chunked(7) { it.toMutableList() }
                         // ADD EMPTY ITEMS TO THE END OF THE LIST IF LAST WEEK DAY OF MONTH DON'T START ON THE FIRST DAY OF THE WEEK
                         daysByWeek.last().let { (1..7 - it.size).forEach { _ -> daysByWeek.last().add(null) } }
 
-
                         daysByWeek.map {
-                            Log.d("fkmfkbnkfb",it.toString())
                             Row {
                                 it.map { day ->
-                                    Log.d("kvnfvfk",it.toString())
-                                     //day != null && (day == startDate.value || day == endDate.value)
-                                    /*     val isBetween = day != null
-                                                && startDate.value != null
-                                                && endDate.value != null
-                                                && (day.after(startDate.value) && day.before(endDate.value))
-                                       val isEnabled = day != null
-                                                && (minDate == null || day.after(minDate) || day == minDate)
-                                                && (maxDate == null || day.before(maxDate) || day == maxDate)*/
+                                    val isSelected = day != null && (day == startDate.value || day == endDate.value)
+                                    val isBetween = day != null
+                                            && startDate.value != null
+                                            && endDate.value != null
+                                            && (day.after(startDate.value) && day.before(endDate.value))
+                                    val isEnabled = day != null
+                                            && (minDate == null || day.after(minDate) || day == minDate)
+                                            && (maxDate == null || day.before(maxDate) || day == maxDate)
 
-//                                    val isThisDaySelected = selectedDates.all { day?.asString(DAY_YEAR) == it?.asString(DAY_YEAR) }
-
-                                    if(selectedDates.all { day?.asString(DAY_YEAR) ==it?.asString(DAY_YEAR) }){
-                                        Log.d("fkfvmfk",day.toString())
-                                    }
-
-
-                                    val selectedBackgroundColor = animateColorAsState(targetValue = if (selectedDates.all { day?.asString(DAY_YEAR) == it?.asString(DAY_YEAR) }) Color.Red else Color.Transparent, label = "", animationSpec = tween(0))
-                                   /* val textColor = animateColorAsState(
-                                        targetValue = if (selectedDates.contains(day)) {
-                                            Log.d("flvmkfvf","isSelected")
-                                            Color.Black
+                                    val selectedBackgroundColor = animateColorAsState(targetValue = if (isSelected) colors.selectedIndicatorColor else Color.Transparent, label = "", animationSpec = tween(durationMillis = 0))
+                                    val textColor = animateColorAsState(
+                                        targetValue = if (isSelected) {
+                                            colors.selectedDayNumberColor
                                         } else if (!isEnabled) {
-                                            Log.d("flvmkfvf","isEnabled")
                                             colors.disableDayColor
                                         } else {
-                                            Log.d("flvmkfvf","Else 293")
                                             colors.dayNumberColor
-                                        }, label = ""
-                                    )*/
+                                        }, label = "", animationSpec = tween(durationMillis = 0)
+                                    )
 
                                     Box(
                                         Modifier
                                             .weight(1f / 7f)
                                             .aspectRatio(1f)
-                                            /*.background(
-                                                if (isBetween || isSelected && endDate.value != null) Color.Green else Color.Transparent,
+                                            .background(
+                                                if (isBetween || isSelected && endDate.value != null) Color.Red else Color.Transparent,
                                                 if (isSelected) RoundedCornerShape(
                                                     topStartPercent = if (day == startDate.value) 100 else 0,
                                                     topEndPercent = if (day == endDate.value) 100 else 0,
                                                     bottomEndPercent = if (day == endDate.value) 100 else 0,
                                                     bottomStartPercent = if (day == startDate.value) 100 else 0,
                                                 ) else RoundedCornerShape(0)
-                                            )*/
+                                            )
                                             .clip(CircleShape)
-                                            .clickable(enabled = true) {
-                                                Log.d("fblmkbmgfb", "308")
-                                                Log.d("fblmkbmgfb", "308")
-                                                if (!selectedDates.contains(day)) {
-                                                    selectedDates.add(day)
-                                                } else {
-                                                    selectedDates.remove(day)
-                                                }
-                                              /*  selectedDates.forEach {
-                                                    Log.d("objkfkmjbfkv", it.toString())
-                                                    Log.d("dldmvkmvkfdvmf",it?.asString(DAY_YEAR).toString()+"3434")
-                                                    Log.d("dldmvkmvkfdvmf",day?.asString(DAY_YEAR).toString()+"3545454")
-                                                }*/
-                                                Log.d("fblmkbmgfb", "dvkdmv $day")
-                                                /* if (day != null) {
+                                            .clickable(enabled = isEnabled) {
+                                                if (day != null) {
                                                     if (startDate.value == null) {
                                                         startDate.value = day
                                                     } else if (endDate.value == null) {
-                                                        if (day.before(startDate.value)) startDate.value =
-                                                            day
-                                                        else if (day.after(startDate.value)) endDate.value =
-                                                            day
-                                                        else if (day == startDate.value) startDate.value =
-                                                            null
+                                                        if (day.before(startDate.value)) startDate.value = day
+                                                        else if (day.after(startDate.value)) endDate.value = day
+                                                        else if (day == startDate.value) startDate.value = null
                                                     } else {
                                                         startDate.value = day
                                                         endDate.value = null
                                                     }
-                                                }*/
+                                                }
+
+                                                onRangeSelected(startDate.value, endDate.value)
                                             }
                                     ) {
                                         Box(
                                             Modifier
                                                 .fillMaxSize()
-                                                .background(
-                                                    selectedBackgroundColor.value,
-                                                    CircleShape
-                                                ),
+                                                .background(selectedBackgroundColor.value, CircleShape),
                                             contentAlignment = Alignment.Center
                                         ) {
                                             var dayNumber: Int? = null
@@ -378,11 +308,9 @@ fun MultiDatePicker(
                                                 dayNumber = calendarDay.get(Calendar.DAY_OF_MONTH)
                                             }
 
-                                            Log.d("flbmkfmbf",(selectedBackgroundColor.value == Color.Yellow).toString())
-
                                             Text(
                                                 text = dayNumber?.toString() ?: "",
-                                                style = MaterialTheme.typography.bodyMedium.copy(color = Color.Blue),
+                                                style = MaterialTheme.typography.bodyMedium.copy(color = textColor.value),
                                                 textAlign = TextAlign.Center,
                                             )
                                         }
@@ -395,5 +323,4 @@ fun MultiDatePicker(
             }
         }
     }
-
 }
